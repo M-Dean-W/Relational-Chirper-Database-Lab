@@ -1,0 +1,119 @@
+CREATE SCHEMA chirper;
+USE chirper;
+
+CREATE TABLE users (
+	id INT AUTO_INCREMENT,
+	handle VARCHAR(60) NOT NULL,
+    email VARCHAR(60) NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE chirps (
+	id INT AUTO_INCREMENT,
+	user_id INT NOT NULL,
+    body VARCHAR(200) NOT NULL,
+    location VARCHAR(60) NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+INSERT INTO users (handle, email) VALUES
+('Darth Vader', 'latervader@IMP.com'),
+('Grand Moff Tarkin', 'tarkinator@IMP.com'),
+('Emperor Palpatine', 'therealslimshady@IMP.com'),
+('Grand Admiral Thrawn', 'thrawnstars@IMP.com'),
+('Formerly Darth Maul', 'fuckthesith@syndicate.net');
+
+SELECT * FROM users;
+
+INSERT INTO chirps (body, location, user_id) VALUES
+('Got a new Master today and learned the dark side is the best side #liesofthejedi', 'Coruscant','1'),
+('The Jedi were the real problem #proempire', 'Coruscant','1'),
+('New lightsaber color...feeling cool #sithisbadass', 'Coruscant','1'),
+('Anyone know any good pizza places on the Death Star? #munchies', 'Death Star','1'),
+('Waiting for AAA to come help my broken Tie Fighter #takingforver', 'Space','1');
+
+SELECT * FROM chirps;
+
+INSERT INTO chirps (body, location, user_id) VALUES
+('Promoted to Grand Moff #glorytotheempire', 'Death Star','2'),
+('Peace comes from having a big fucking laser #deathstar', 'Death Star','2'),
+('@Darth Vader, go to the Empire Slices back...way better than pizza the hut', 'Death Star','2'),
+('We captured the princess and I have a feeling we are about to find the rebel base #winning', 'Death Star','2'),
+('We found the rebel base and we are about to blow them up #nothingcangowrongtoday', 'Death Star','2');
+
+INSERT INTO chirps (body, location, user_id) VALUES
+('Ya boi just became Emperor #glorytotheempire #feelingfab', 'Coruscant','3'),
+('Shoutout to my homies @Darth Vader and @Grand Moff Tarkin for being promoted #bestboss', 'Coruscant','3'),
+('@Darth Vader, can confrim the Empire Slices back is the best pizza in the galaxy #pizzatime', 'Death Star','3'),
+('What do you mean they blew up the Death Star?! #rebelscum #fuckingteenagers', 'Coruscant','3'),
+('New Death Star who dis? #thistimewegotit', 'New Death Star','3');
+
+INSERT INTO chirps (body, location, user_id) VALUES
+('Thanks @Emperor Palpatine #Palpatineisbestboss', 'Coruscant','4'),
+('Darn rebels #scum', 'Coruscant','4'),
+('Killed a lot of rebels today #slay', 'Space','4'),
+('Wtf is a space whale doing next to my ship? #probablyfine', 'Lothal','4'),
+('Coming home from whale exhile #ifyouknowyouknow', 'Space','4');
+
+INSERT INTO chirps (body, location, user_id) VALUES
+('Thought you could kill me by slicing me in half? #tryagain #darkside #fanbasetoostrong', 'Unknown','5'),
+('None of the sheeple beleived me and now all the jedi are dead #deserved #openyoureyes', 'Unknown','5'),
+('@Emperor Palpatine, the sith are shit #assholes #comeatme', 'Unknown','5'),
+('Where is KENOBIIIIIIIIIIIIII!? #onthehunt #fuckthedesert', 'Unknown','5'),
+('Finally found Kenobi... I will let yall know how it went after I kill him #mytimeisnow #cantwait #cantlose', 'Unknown','5');
+
+INSERT INTO users (handle, email) VALUE
+('Luke Skywalker', 'thechosenone@rebels.com');
+
+SELECT
+	users.id,
+    users.handle,
+    users.email,
+    chirps.body,
+    chirps.location,
+    chirps.created_at
+FROM chirps
+JOIN users ON chirps.user_id = users.id;
+
+SELECT
+	users.id,
+    users.handle,
+    users.email,
+    users.created_at AS Registered,
+    chirps.body,
+    chirps.location,
+    chirps.created_at AS chirped_on
+FROM chirps
+JOIN users ON chirps.user_id = users.id;
+
+SELECT
+	users.id,
+    users.handle,
+    users.email,
+    users.created_at AS Registered,
+    chirps.body,
+    chirps.location
+FROM chirps
+RIGHT JOIN users ON chirps.user_id = users.id;
+
+CREATE TABLE mentions (
+	chirp_id INT NOT NULL,
+	user_id INT NOT NULL,
+    PRIMARY KEY (chirp_id, user_id),
+    FOREIGN KEY (chirp_id) REFERENCES chirps (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+INSERT INTO mentions (chirp_id, user_id) VALUES
+('8','1'), ('13','1'), ('16','3'), ('23','3');
+
+
+SELECT 
+chirps.*,
+users.*
+FROM mentions
+JOIN users ON users.id = mentions.user_id
+JOIN chirps on chirps.id = mentions.chirp_id;
